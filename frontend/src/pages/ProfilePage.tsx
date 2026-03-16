@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Settings, Grid3X3, Bookmark, Heart, Play, Youtube, LogIn, Loader2 } from "lucide-react";
+import { Settings, Grid3X3, Bookmark, Heart, Play, Youtube, LogIn, Loader2, LogOut, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/useAuth";
 import { fetchMyYouTubeChannel, saveChannelToProfile } from "@/lib/youtube";
@@ -33,7 +33,7 @@ const formatSubscribers = (n: number | null): string => {
 };
 
 const ProfilePage = () => {
-  const { user, profile, loading, signInWithGoogle, refreshProfile } = useAuth();
+  const { user, profile, loading, signInWithGoogle, refreshProfile, signOut } = useAuth();
   const [searchParams] = useSearchParams();
   const publicProfileId = searchParams.get("id");
 
@@ -260,9 +260,18 @@ const ProfilePage = () => {
                 <span className="text-sm text-muted-foreground">@{displayProfile.username}</span>
               )}
               {isOwnProfile && (
-                <button className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
-                  <Settings className="w-4 h-4 text-foreground" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
+                    <Settings className="w-4 h-4 text-foreground" />
+                  </button>
+                  <button 
+                    onClick={signOut}
+                    title="Sign out"
+                    className="w-8 h-8 rounded-full bg-secondary md:hidden flex items-center justify-center hover:bg-secondary/80 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4 text-foreground" />
+                  </button>
+                </div>
               )}
             </div>
             {displayProfile?.bio && (
@@ -439,6 +448,27 @@ const ProfilePage = () => {
                 <div className="absolute inset-0 bg-background/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Play className="w-8 h-8 text-foreground" />
                 </div>
+                {isOwnProfile && activeTab === "Posts" && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (window.confirm("Are you sure you want to delete this post?")) {
+                        supabase.from("reels").delete().eq("id", reel.id).then(({error}) => {
+                          if (!error) {
+                            setGridReels(prev => prev.filter(r => r.id !== reel.id));
+                            toast({ title: "Post deleted successfully" });
+                          } else {
+                            toast({ title: "Error deleting post", description: error.message, variant: "destructive" });
+                          }
+                        });
+                      }
+                    }}
+                    className="absolute top-2 right-2 p-1.5 bg-black/50 rounded-full text-white/90 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/90 hover:text-white z-20"
+                    title="Delete Post"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
                 <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 text-xs text-foreground font-medium drop-shadow">
                   <Heart className="w-3 h-3" />
                   {reel.likes_count}

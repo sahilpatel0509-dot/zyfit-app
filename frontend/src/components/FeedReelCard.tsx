@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import type { DbReel } from "@/hooks/use-reels";
 import CommentsSlideUp from "@/components/CommentsSlideUp";
 import { useAuth } from "@/contexts/useAuth";
+import { useReels } from "@/hooks/use-reels";
+import { Trash2 } from "lucide-react";
 
 interface FeedReelCardProps {
   reel: DbReel;
@@ -27,6 +29,7 @@ const isVideoUrl = (url: string) =>
 
 const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCardProps) => {
   const { user } = useAuth();
+  const { deleteReel } = useReels();
   const [showComments, setShowComments] = useState(false);
   const [paused, setPaused] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -165,6 +168,32 @@ const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCard
 
         {/* Right action buttons */}
         <div className="absolute right-3 bottom-32 md:bottom-24 flex flex-col items-center gap-5 z-10">
+          {/* Delete Option for Owner */}
+          {(user?.id === reel.user_id || user?.id === reel.profiles?.id) && (
+            <button
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (window.confirm("Are you sure you want to delete this post?")) {
+                  try {
+                    await deleteReel(reel.id);
+                    toast.success("Post deleted successfully");
+                    window.location.reload(); // Refresh to reflect changes if the state is unlinked
+                  } catch (err: any) {
+                    toast.error(err.message || "Could not delete post");
+                  }
+                }
+              }}
+              className="flex flex-col items-center gap-1 group"
+            >
+              <motion.div
+                whileTap={{ scale: 1.2 }}
+                className="w-11 h-11 rounded-full glass-light flex items-center justify-center transition-colors hover:bg-red-500/20"
+              >
+                <Trash2 className="w-5 h-5 text-red-500" />
+              </motion.div>
+            </button>
+          )}
+
           {/* Like */}
           <button
             onClick={() => user && onLike(reel.id)}
@@ -266,12 +295,12 @@ const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCard
                 avatarLetter
               )}
             </div>
-            <span className="text-sm font-semibold text-foreground">@{displayName}</span>
+            <span className="text-sm font-semibold text-foreground truncate max-w-[140px]">@{displayName}</span>
             {user && user.id !== reel.profiles?.id && (
               <button
                 onClick={(e) => { e.stopPropagation(); onFollow(reel.profiles!.id); }}
                 className={cn(
-                  "px-3 py-1 rounded-full text-xs font-medium transition-colors",
+                  "px-3 py-1 rounded-full text-xs font-medium transition-colors shrink-0",
                   reel.isFollowing
                     ? "bg-foreground/20 text-foreground"
                     : "border border-foreground/30 text-foreground hover:bg-foreground/10"

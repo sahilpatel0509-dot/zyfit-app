@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/useAuth";
 
 export interface DbReel {
   id: string;
+  user_id: string;
   media_url: string;
   caption: string | null;
   affiliate_link: string | null;
@@ -35,7 +36,7 @@ export function useReels() {
       const { data, error: fetchError } = await supabase
         .from("reels")
         .select(`
-          id, media_url, caption, affiliate_link, tags,
+          id, user_id, media_url, caption, affiliate_link, tags,
           created_at,
           profiles:user_id ( id, username, full_name, avatar_url )
         `)
@@ -214,6 +215,22 @@ export function useReels() {
     [user, reels]
   );
 
-  return { reels, loading, error, fetchReels, toggleLike, toggleSave, toggleFollow };
+  const deleteReel = useCallback(
+    async (reelId: string) => {
+      try {
+        const { error } = await supabase.from("reels").delete().eq("id", reelId);
+        if (error) throw error;
+        
+        // Optimistically remove it from state
+        setReels((prev) => prev.filter((r) => r.id !== reelId));
+        return true;
+      } catch (err: any) {
+        throw new Error(err.message || "Failed to delete reel");
+      }
+    },
+    []
+  );
+
+  return { reels, loading, error, fetchReels, toggleLike, toggleSave, toggleFollow, deleteReel };
 }
 
