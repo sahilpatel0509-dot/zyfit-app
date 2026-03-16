@@ -168,32 +168,6 @@ const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCard
 
         {/* Right action buttons */}
         <div className="absolute right-3 bottom-32 md:bottom-24 flex flex-col items-center gap-5 z-10">
-          {/* Delete Option for Owner */}
-          {(user?.id === reel.user_id || user?.id === reel.profiles?.id) && (
-            <button
-              onClick={async (e) => {
-                e.stopPropagation();
-                if (window.confirm("Are you sure you want to delete this post?")) {
-                  try {
-                    await deleteReel(reel.id);
-                    toast.success("Post deleted successfully");
-                    window.location.reload(); // Refresh to reflect changes if the state is unlinked
-                  } catch (err: any) {
-                    toast.error(err.message || "Could not delete post");
-                  }
-                }
-              }}
-              className="flex flex-col items-center gap-1 group"
-            >
-              <motion.div
-                whileTap={{ scale: 1.2 }}
-                className="w-11 h-11 rounded-full glass-light flex items-center justify-center transition-colors hover:bg-red-500/20"
-              >
-                <Trash2 className="w-5 h-5 text-red-500" />
-              </motion.div>
-            </button>
-          )}
-
           {/* Like */}
           <button
             onClick={() => user && onLike(reel.id)}
