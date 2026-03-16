@@ -22,6 +22,8 @@ export function EditProfileDialog({ open, onOpenChange }: EditProfileDialogProps
     full_name: "",
     bio: "",
   });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (profile && open) {
@@ -30,8 +32,27 @@ export function EditProfileDialog({ open, onOpenChange }: EditProfileDialogProps
         full_name: profile.full_name || "",
         bio: profile.bio || "",
       });
+      setAvatarPreview(profile.avatar_url || null);
+      setAvatarFile(null);
     }
   }, [profile, open]);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: "File too large", description: "Max size is 5MB", variant: "destructive" });
+        return;
+      }
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarFile(null);
+    setAvatarPreview(null);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -43,12 +64,30 @@ export function EditProfileDialog({ open, onOpenChange }: EditProfileDialogProps
 
     setLoading(true);
     try {
+      let newAvatarUrl = avatarPreview;
+      if (avatarFile) {
+        const ext = avatarFile.name.split(".").pop();
+        const storagePath = `avatars/${user.id}/${Date.now()}.${ext}`;
+        const { error: storageError } = await supabase.storage
+          .from("reels")
+          .upload(storagePath, avatarFile, { upsert: true });
+
+        if (storageError) throw storageError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("reels")
+          .getPublicUrl(storagePath);
+          
+        newAvatarUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from("profiles")
         .update({
           username: formData.username,
           full_name: formData.full_name,
           bio: formData.bio,
+          avatar_url: newAvatarUrl,
         })
         .eq("id", user.id);
 
@@ -78,6 +117,36 @@ export function EditProfileDialog({ open, onOpenChange }: EditProfileDialogProps
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <div className="flex flex-col items-center space-y-3 pb-2">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden bg-secondary border-4 border-background shadow-sm flex items-center justify-center">
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-3xl text-muted-foreground font-bold">{formData.username?.charAt(0).toUpperCase() || "U"}</span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Label htmlFor="avatar-upload" className="cursor-pointer text-xs font-semibold px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 transition-colors">
+                Change Photo
+                <Input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </Label>
+              {avatarPreview && (
+                <button
+                  type="button"
+                  onClick={handleRemoveAvatar}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors dark:bg-red-900/30 dark:text-red-500"
+                >
+                  Delete Photo
+                </button>
+              )}
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input
