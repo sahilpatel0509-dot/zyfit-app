@@ -261,9 +261,6 @@ const ProfilePage = () => {
               )}
               {isOwnProfile && (
                 <div className="flex items-center gap-2">
-                  <button className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
-                    <Settings className="w-4 h-4 text-foreground" />
-                  </button>
                   <button 
                     onClick={signOut}
                     title="Sign out"
