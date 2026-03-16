@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Settings, Grid3X3, Bookmark, Heart, Play, Youtube, LogIn, Loader2, LogOut, Trash2 } from "lucide-react";
+import { Settings, Grid3X3, Bookmark, Heart, Play, Youtube, LogIn, Loader2, LogOut, Trash2, Lock, Unlock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/useAuth";
 import { fetchMyYouTubeChannel, saveChannelToProfile } from "@/lib/youtube";
@@ -293,40 +293,75 @@ const ProfilePage = () => {
 
         {/* YouTube Channel Card */}
         {displayProfile?.youtube_channel_id ? (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 mb-6 p-4 rounded-2xl bg-card border border-border/50"
-          >
-            {displayProfile.youtube_channel_thumbnail ? (
-              <img
-                src={displayProfile.youtube_channel_thumbnail}
-                alt={displayProfile.youtube_channel_name ?? ""}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-red-900/40 flex items-center justify-center">
-                <Youtube className="w-5 h-5 text-red-500" />
+          <div className="mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/50"
+            >
+              {displayProfile.youtube_channel_thumbnail ? (
+                <img
+                  src={displayProfile.youtube_channel_thumbnail}
+                  alt={displayProfile.youtube_channel_name ?? ""}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-red-900/40 flex items-center justify-center">
+                  <Youtube className="w-5 h-5 text-red-500" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">
+                  {displayProfile.youtube_channel_name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatSubscribers(displayProfile.youtube_subscriber_count)} subscribers
+                </p>
               </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground truncate">
-                {displayProfile.youtube_channel_name}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {formatSubscribers(displayProfile.youtube_subscriber_count)} subscribers
-              </p>
-            </div>
+              {isOwnProfile && (
+                <button
+                  onClick={handleCheckYouTube}
+                  disabled={checkingYT}
+                  className="text-xs text-primary hover:underline disabled:opacity-50 shrink-0"
+                >
+                  {checkingYT ? "Refreshing…" : "Refresh"}
+                </button>
+              )}
+            </motion.div>
+            
+            {/* Upload Lock/Unlock Status */}
             {isOwnProfile && (
-              <button
-                onClick={handleCheckYouTube}
-                disabled={checkingYT}
-                className="text-xs text-primary hover:underline disabled:opacity-50 shrink-0"
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className={cn(
+                  "mt-3 flex items-start gap-3 p-3 rounded-xl border text-sm",
+                  ((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10)
+                    ? "bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400"
+                    : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
+                )}
               >
-                {checkingYT ? "Refreshing…" : "Refresh"}
-              </button>
+                {((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10) ? (
+                  <Unlock className="w-5 h-5 shrink-0" />
+                ) : (
+                  <Lock className="w-5 h-5 shrink-0" />
+                )}
+                <div>
+                  <p className="font-semibold">
+                    {((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10)
+                      ? "Uploads Unlocked"
+                      : "Uploads Locked"}
+                  </p>
+                  <p className="text-xs opacity-90 mt-0.5">
+                    {((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10)
+                      ? "You meet the requirements to upload reels."
+                      : `You need at least 10 subscribers (have ${displayProfile.youtube_subscriber_count ?? 0}) and 10 posts (have ${liveStats.posts}) to upload.`}
+                  </p>
+                </div>
+              </motion.div>
             )}
-          </motion.div>
+          </div>
         ) : (isOwnProfile && (
           <div className="mb-6">
             <button
