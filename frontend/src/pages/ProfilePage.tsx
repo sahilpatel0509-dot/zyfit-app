@@ -460,7 +460,7 @@ const ProfilePage = () => {
                         });
                       }
                     }}
-                    className="absolute top-2 right-2 p-1.5 bg-black/50 rounded-full text-white/90 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/90 hover:text-white z-20"
+                    className="absolute top-2 right-2 p-1.5 bg-black/50 rounded-full text-white/90 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all md:hover:bg-red-500/90 md:hover:text-white z-20"
                     title="Delete Post"
                   >
                     <Trash2 className="w-4 h-4" />
