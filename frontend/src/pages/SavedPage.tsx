@@ -15,7 +15,7 @@ const SavedPage = () => {
 
   if (!authLoading && !user) {
     return (
-      <div className="min-h-screen pt-14 pb-20 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
+      <div className="min-h-screen md:pt-14 pb-20 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
         <Bookmark className="w-12 h-12 text-muted-foreground mb-2" />
         <h2 className="text-xl font-display font-bold text-foreground">Sign in to see saved reels</h2>
         <button
@@ -30,7 +30,7 @@ const SavedPage = () => {
   }
 
   return (
-    <div className="min-h-screen pt-14 pb-20 md:pb-4">
+    <div className="min-h-screen md:pt-14 pb-20 md:pb-4">
       <div className="px-4 md:px-6 py-6">
         <div className="flex items-center gap-2 mb-1">
           <Bookmark className="w-5 h-5 text-primary" />

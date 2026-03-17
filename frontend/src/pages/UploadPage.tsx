@@ -187,7 +187,7 @@ const UploadPage = () => {
   }
 
   return (
-    <div className="min-h-screen pt-14 pb-20 md:pb-4">
+    <div className="min-h-screen md:pt-14 pb-20 md:pb-4">
       <div className="max-w-2xl mx-auto px-4 md:px-6 py-8">
         <h1 className="text-2xl font-display font-bold text-foreground mb-1">Upload Reel</h1>
         <p className="text-sm text-muted-foreground mb-8">Share your fashion moment with the world</p>
