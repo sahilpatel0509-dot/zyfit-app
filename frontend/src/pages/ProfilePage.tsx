@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Settings, Grid3X3, Bookmark, Heart, Play, Youtube, LogIn, Loader2, LogOut, Trash2, Lock, Unlock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/useAuth";
+import { useReels } from "@/hooks/use-reels";
 import { fetchMyYouTubeChannel, saveChannelToProfile } from "@/lib/youtube";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
@@ -34,6 +35,7 @@ const formatSubscribers = (n: number | null): string => {
 
 const ProfilePage = () => {
   const { user, profile, loading, signInWithGoogle, refreshProfile, signOut } = useAuth();
+  const { deleteReel } = useReels();
   const [searchParams] = useSearchParams();
   const publicProfileId = searchParams.get("id");
 
@@ -485,13 +487,12 @@ const ProfilePage = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                       if (window.confirm("Are you sure you want to delete this post?")) {
-                        supabase.from("reels").delete().eq("id", reel.id).then(({error}) => {
-                          if (!error) {
-                            setGridReels(prev => prev.filter(r => r.id !== reel.id));
-                            toast({ title: "Post deleted successfully" });
-                          } else {
-                            toast({ title: "Error deleting post", description: error.message, variant: "destructive" });
-                          }
+                        deleteReel(reel.id, reel.media_url).then(() => {
+                          setGridReels(prev => prev.filter(r => r.id !== reel.id));
+                          fetchStats(profileIdToFetch!);
+                          toast({ title: "Post deleted successfully" });
+                        }).catch((error) => {
+                          toast({ title: "Error deleting post", description: error.message, variant: "destructive" });
                         });
                       }
                     }}

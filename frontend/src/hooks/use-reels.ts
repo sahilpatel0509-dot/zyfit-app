@@ -217,12 +217,33 @@ export function useReels() {
   );
 
   const deleteReel = useCallback(
-    async (reelId: string) => {
+    async (reelId: string, mediaUrl?: string) => {
       try {
+        // 1. Delete associated products first (safeguard)
+        await supabase.from("reel_products").delete().eq("reel_id", reelId);
+
+        // 2. Delete media from storage if URL is provided
+        if (mediaUrl) {
+          try {
+            // Extract path from public URL: https://.../storage/v1/object/public/reels/PATH
+            const urlParts = mediaUrl.split("/reels/");
+            if (urlParts.length > 1) {
+              const storagePath = urlParts[1];
+              const { error: storageError } = await supabase.storage
+                .from("reels")
+                .remove([storagePath]);
+              if (storageError) console.error("Storage deletion error:", storageError);
+            }
+          } catch (storageErr) {
+            console.error("Failed to extract or delete storage file:", storageErr);
+          }
+        }
+
+        // 3. Delete the reel record
         const { error } = await supabase.from("reels").delete().eq("id", reelId);
         if (error) throw error;
         
-        // Optimistically remove it from state
+        // Optimistically remove it from local state
         setReels((prev) => prev.filter((r) => r.id !== reelId));
         return true;
       } catch (err: any) {
