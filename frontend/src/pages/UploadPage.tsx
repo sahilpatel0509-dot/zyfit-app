@@ -20,7 +20,7 @@ const UploadPage = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [isVideo, setIsVideo] = useState(false);
   const [caption, setCaption] = useState("");
-  const [products, setProducts] = useState<{name: string, link: string}[]>([]);
+  const [products, setProducts] = useState<{ name: string, link: string }[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [status, setStatus] = useState<UploadStatus>("idle");
@@ -164,7 +164,7 @@ const UploadPage = () => {
   const subscriberCount = profile?.youtube_subscriber_count ?? 0;
   const videoCount = profile?.youtube_video_count ?? 0;
 
-  if (!hasLinkedYouTube || subscriberCount < 10 || videoCount < 10) {
+  if (!hasLinkedYouTube || subscriberCount < 0 || videoCount < 0) {
     return (
       <div className="min-h-screen pt-14 pb-20 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
         <div className="w-20 h-20 rounded-full bg-red-900/20 flex items-center justify-center mb-2">
@@ -277,7 +277,7 @@ const UploadPage = () => {
                 Affiliate Products <span className="text-muted-foreground font-normal">(Optional)</span>
               </label>
             </div>
-            
+
             <div className="space-y-3">
               {products.map((product, index) => (
                 <div key={index} className="flex gap-2">
