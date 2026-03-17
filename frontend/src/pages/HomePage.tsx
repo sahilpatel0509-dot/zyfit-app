@@ -57,10 +57,10 @@ const HomePage = () => {
   return (
     <div
       ref={containerRef}
-      className="h-[calc(100dvh-8rem)] md:h-[calc(100dvh-4rem)] overflow-y-scroll snap-y snap-mandatory no-scrollbar"
+      className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-4rem)] overflow-y-scroll snap-y snap-mandatory no-scrollbar"
     >
       {reels.map((reel, index) => (
-        <div key={reel.id} data-index={index} className="h-[calc(100dvh-8rem)] md:h-[calc(100dvh-4rem)] snap-start">
+        <div key={reel.id} data-index={index} className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-4rem)] snap-start">
           <FeedReelCard
             reel={reel}
             isActive={index === activeIndex}

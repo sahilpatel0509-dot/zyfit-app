@@ -53,8 +53,8 @@ const ExplorePage = () => {
   }, [reels, activeCategory, search]);
 
   return (
-    <div className="min-h-screen md:pt-14 pb-20 md:pb-4">
-      <div className="px-4 md:px-6 py-6">
+    <div className="min-h-screen md:pt-14 pb-16 md:pb-4">
+      <div className="px-4 md:px-6 md:py-6 py-4">
         <h1 className="text-2xl font-display font-bold text-foreground mb-1">Explore</h1>
         <p className="text-sm text-muted-foreground mb-4">Discover trending fashion content</p>
 
