@@ -89,6 +89,7 @@ export function useReels() {
       setReels(
         (data ?? []).map((r: RawReel) => ({
           ...r,
+          tags: Array.isArray(r.tags) ? r.tags : [],
           likes_count: likeCountMap[r.id] ?? 0,
           comments_count: commentCountMap[r.id] ?? 0,
           profiles: Array.isArray(r.profiles) ? (r.profiles[0] ?? null) : r.profiles,

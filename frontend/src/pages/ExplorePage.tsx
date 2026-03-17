@@ -37,7 +37,7 @@ const ExplorePage = () => {
     let result = reels;
     if (activeCategory !== "All") {
       result = result.filter((r) =>
-        r.tags.some((t) => t.toLowerCase().includes(activeCategory.toLowerCase()))
+        (r.tags ?? []).some((t) => t.toLowerCase().includes(activeCategory.toLowerCase()))
       );
     }
     if (search.trim()) {
@@ -45,7 +45,7 @@ const ExplorePage = () => {
       result = result.filter(
         (r) =>
           r.caption?.toLowerCase().includes(q) ||
-          r.tags.some((t) => t.toLowerCase().includes(q)) ||
+          (r.tags ?? []).some((t) => t.toLowerCase().includes(q)) ||
           (r.profiles?.username ?? "").toLowerCase().includes(q)
       );
     }
@@ -151,10 +151,10 @@ const ExplorePage = () => {
                   </div>
 
                   {/* Tag badge */}
-                  {reel.tags[0] && (
+                  {(reel.tags ?? [])[0] && (
                     <div className="absolute top-2 left-2">
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-foreground/10 text-foreground backdrop-blur-sm">
-                        #{reel.tags[0]}
+                        #{(reel.tags ?? [])[0]}
                       </span>
                     </div>
                   )}

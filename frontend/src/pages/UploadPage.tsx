@@ -99,11 +99,17 @@ const UploadPage = () => {
       setProgress(75);
 
       // 3. Insert reel record
+      const finalTags = [...tags];
+      const pendingTag = tagInput.trim().replace(/^#/, "").toLowerCase();
+      if (pendingTag && !finalTags.includes(pendingTag) && finalTags.length < 5) {
+        finalTags.push(pendingTag);
+      }
+
       const { data: reelData, error: dbError } = await supabase.from("reels").insert({
         user_id: user.id,
         media_url: publicUrl,
         caption: caption.trim() || null,
-        tags,
+        tags: finalTags,
         is_published: true,
       }).select().single();
 
@@ -349,9 +355,9 @@ const UploadPage = () => {
                 Add
               </button>
             </div>
-            {tags.length > 0 && (
+            {(tags ?? []).length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
+                {(tags ?? []).map((tag) => (
                   <span key={tag} className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
                     #{tag}
                     <button onClick={() => removeTag(tag)} className="hover:text-destructive transition-colors">

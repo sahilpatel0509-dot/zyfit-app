@@ -290,9 +290,9 @@ const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCard
             </p>
           )}
 
-          {reel.tags.length > 0 && (
+          {(reel.tags ?? []).length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {reel.tags.map((tag) => (
+              {(reel.tags ?? []).map((tag) => (
                 <span
                   key={tag}
                   className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-foreground/10 text-foreground/80 backdrop-blur-sm"
