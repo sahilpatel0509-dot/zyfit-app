@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, Film, Tag, Type, CheckCircle2, Loader2, LogIn, Link as LinkIcon } from "lucide-react";
+import { Upload, X, Film, Tag, Type, CheckCircle2, Loader2, LogIn, Link as LinkIcon, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/useAuth";
@@ -20,7 +20,7 @@ const UploadPage = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [isVideo, setIsVideo] = useState(false);
   const [caption, setCaption] = useState("");
-  const [affiliateLink, setAffiliateLink] = useState("");
+  const [products, setProducts] = useState<{name: string, link: string}[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [status, setStatus] = useState<UploadStatus>("idle");
@@ -99,16 +99,28 @@ const UploadPage = () => {
       setProgress(75);
 
       // 3. Insert reel record
-      const { error: dbError } = await supabase.from("reels").insert({
+      const { data: reelData, error: dbError } = await supabase.from("reels").insert({
         user_id: user.id,
         media_url: publicUrl,
         caption: caption.trim() || null,
-        affiliate_link: affiliateLink.trim() || null,
         tags,
         is_published: true,
-      });
+      }).select().single();
 
       if (dbError) throw dbError;
+
+      // 4. Insert products
+      const validProducts = products.filter(p => p.name.trim() && p.link.trim());
+      if (validProducts.length > 0 && reelData) {
+        const { error: productsError } = await supabase.from("reel_products").insert(
+          validProducts.map(p => ({
+            reel_id: reelData.id,
+            product_name: p.name.trim(),
+            affiliate_link: p.link.trim()
+          }))
+        );
+        if (productsError) throw productsError;
+      }
       setProgress(100);
       setStatus("done");
 
@@ -257,19 +269,62 @@ const UploadPage = () => {
             <p className="text-xs text-muted-foreground mt-1 text-right">{caption.length}/500</p>
           </div>
 
-          {/* Affiliate Link */}
+          {/* Affiliate Products */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
-              <LinkIcon className="w-4 h-4 text-muted-foreground" />
-              Affiliate / Product Link <span className="text-muted-foreground font-normal">(Optional)</span>
-            </label>
-            <input
-              type="url"
-              value={affiliateLink}
-              onChange={(e) => setAffiliateLink(e.target.value)}
-              placeholder="https://example.com/product"
-              className="w-full h-11 rounded-xl bg-secondary border border-border/50 px-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
-            />
+            <div className="flex items-center justify-between mb-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <LinkIcon className="w-4 h-4 text-muted-foreground" />
+                Affiliate Products <span className="text-muted-foreground font-normal">(Optional)</span>
+              </label>
+            </div>
+            
+            <div className="space-y-3">
+              {products.map((product, index) => (
+                <div key={index} className="flex gap-2">
+                  <div className="flex-1 space-y-2">
+                    <input
+                      type="text"
+                      value={product.name}
+                      onChange={(e) => {
+                        const newProducts = [...products];
+                        newProducts[index].name = e.target.value;
+                        setProducts(newProducts);
+                      }}
+                      placeholder="Product Name (e.g. Nike Shoes)"
+                      className="w-full h-11 rounded-box bg-secondary border border-border/50 px-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    />
+                    <input
+                      type="url"
+                      value={product.link}
+                      onChange={(e) => {
+                        const newProducts = [...products];
+                        newProducts[index].link = e.target.value;
+                        setProducts(newProducts);
+                      }}
+                      placeholder="Product Link"
+                      className="w-full h-11 rounded-box bg-secondary border border-border/50 px-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      const newProducts = [...products];
+                      newProducts.splice(index, 1);
+                      setProducts(newProducts);
+                    }}
+                    className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-box bg-secondary hover:bg-destructive/20 hover:text-destructive text-muted-foreground transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setProducts([...products, { name: "", link: "" }])}
+              className="mt-3 flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            >
+              <Plus className="w-4 h-4" /> Add Product
+            </button>
           </div>
 
           {/* Tags */}

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { DbReel } from "@/hooks/use-reels";
 import CommentsSlideUp from "@/components/CommentsSlideUp";
+import ProductsSlideUp from "@/components/ProductsSlideUp";
 import { useAuth } from "@/contexts/useAuth";
 import { useReels } from "@/hooks/use-reels";
 import { Trash2 } from "lucide-react";
@@ -31,6 +32,7 @@ const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCard
   const { user } = useAuth();
   const { deleteReel } = useReels();
   const [showComments, setShowComments] = useState(false);
+  const [showProducts, setShowProducts] = useState(false);
   const [paused, setPaused] = useState(false);
   const [muted, setMuted] = useState(false);
   const [showHeart, setShowHeart] = useState(false);
@@ -201,6 +203,17 @@ const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCard
             <span className="text-xs font-medium text-foreground">{formatCount(localCommentCount)}</span>
           </button>
 
+          {/* Products */}
+          <button
+            onClick={() => setShowProducts(true)}
+            className="flex flex-col items-center gap-1"
+          >
+            <div className="w-11 h-11 rounded-full glass-light flex items-center justify-center">
+              <ShoppingCart className="w-6 h-6 text-foreground" />
+            </div>
+            <span className="text-xs font-medium text-foreground">Products</span>
+          </button>
+
           {/* Save */}
           <button
             onClick={() => user && onSave(reel.id)}
@@ -246,20 +259,6 @@ const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCard
 
         {/* Bottom info */}
         <div className="absolute left-4 right-20 bottom-20 md:bottom-8 z-10 flex flex-col gap-3">
-          {reel.affiliate_link && (
-            <div className="self-start">
-              <a 
-                href={reel.affiliate_link.startsWith('http') ? reel.affiliate_link : `https://${reel.affiliate_link}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-md rounded-full text-xs font-semibold text-foreground hover:bg-background transition-colors pointer-events-auto shadow-sm"
-              >
-                <ShoppingCart className="w-3.5 h-3.5 text-primary" />
-                Product Link
-              </a>
-            </div>
-          )}
 
           <div className="flex items-center gap-2.5 mb-1">
             <div className="w-9 h-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold ring-2 ring-primary/30 overflow-hidden shrink-0">
@@ -324,6 +323,12 @@ const FeedReelCard = ({ reel, isActive, onLike, onSave, onFollow }: FeedReelCard
         commentCount={localCommentCount}
         reelId={reel.id}
         onCommentAdded={() => setLocalCommentCount((c) => c + 1)}
+      />
+
+      <ProductsSlideUp
+        isOpen={showProducts}
+        onClose={() => setShowProducts(false)}
+        reelId={reel.id}
       />
     </>
   );
