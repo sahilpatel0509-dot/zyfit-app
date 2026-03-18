@@ -96,7 +96,7 @@ const HomePage = () => {
       </div>
 
       {/* ✅ FIXED FOOTER (VERY IMPORTANT FOR GOOGLE) */}
-      <div className="fixed bottom-2 left-0 right-0 text-center text-xs text-white z-50">
+      <div className="fixed bottom-2 left-2 text-left text-xs text-white z-50">
         <a href="/privacy" className="underline mr-2">
           Privacy Policy
         </a>
