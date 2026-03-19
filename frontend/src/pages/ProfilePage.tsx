@@ -367,53 +367,55 @@ const ProfilePage = () => {
         ))}
 
         {/* Action Buttons */}
-        <div className="flex gap-2 mb-6">
-          {isOwnProfile && (
+        <div className="flex flex-col gap-2 mb-6">
+          <div className="flex gap-2 w-full">
+            {isOwnProfile && (
+              <button
+                onClick={() => setIsEditProfileOpen(true)}
+                className="flex-1 h-10 rounded-xl bg-gradient-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
+              >
+                Edit Profile
+              </button>
+            )}
+            {!isOwnProfile && user && (
+              <button
+                onClick={handleFollowToggle}
+                className={cn(
+                  "flex-1 h-10 rounded-xl text-sm font-semibold transition-opacity",
+                  isFollowing
+                    ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    : "bg-gradient-primary text-primary-foreground hover:opacity-90"
+                )}
+              >
+                {isFollowing ? "Following" : "Follow"}
+              </button>
+            )}
             <button
-              onClick={() => setIsEditProfileOpen(true)}
-              className="flex-1 h-10 rounded-xl bg-gradient-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
+              onClick={() => {
+                const url = `${window.location.origin}/profile?id=${profileIdToFetch}`;
+                if (navigator.share) {
+                  navigator.share({
+                    title: 'My Profile',
+                    url: url
+                  }).catch(console.error);
+                } else {
+                  navigator.clipboard.writeText(url);
+                  toast({
+                    title: "Link copied!",
+                    description: "Profile link copied to clipboard.",
+                  });
+                }
+              }}
+              className="flex-1 h-10 rounded-xl bg-secondary text-secondary-foreground text-sm font-semibold hover:bg-secondary/80 transition-colors"
             >
-              Edit Profile
+              Share Profile
             </button>
-          )}
-          {!isOwnProfile && user && (
-            <button
-              onClick={handleFollowToggle}
-              className={cn(
-                "flex-1 h-10 rounded-xl text-sm font-semibold transition-opacity",
-                isFollowing
-                  ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  : "bg-gradient-primary text-primary-foreground hover:opacity-90"
-              )}
-            >
-              {isFollowing ? "Following" : "Follow"}
-            </button>
-          )}
-          <button
-            onClick={() => {
-              const url = `${window.location.origin}/profile?id=${profileIdToFetch}`;
-              if (navigator.share) {
-                navigator.share({
-                  title: 'My Profile',
-                  url: url
-                }).catch(console.error);
-              } else {
-                navigator.clipboard.writeText(url);
-                toast({
-                  title: "Link copied!",
-                  description: "Profile link copied to clipboard.",
-                });
-              }
-            }}
-            className="flex-1 h-10 rounded-xl bg-secondary text-secondary-foreground text-sm font-semibold hover:bg-secondary/80 transition-colors"
-          >
-            Share Profile
-          </button>
+          </div>
           
           {isOwnProfile && (
             <button
               onClick={signOut}
-              className="flex-1 h-10 rounded-xl bg-secondary text-secondary-foreground text-sm font-semibold hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
+              className="h-10 rounded-xl bg-secondary text-secondary-foreground text-sm font-semibold hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
             >
               <LogOut className="w-4 h-4" />
               Log Out
