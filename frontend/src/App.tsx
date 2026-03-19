@@ -28,7 +28,7 @@ const App = () => (
           <div className="min-h-screen bg-background">
             <TopNavbar />
             <DesktopSidebar />
-            <div className="md:ml-16 lg:ml-52 pt-16">
+            <div className="md:ml-16 lg:ml-52 md:pt-16">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/explore" element={<ExplorePage />} />

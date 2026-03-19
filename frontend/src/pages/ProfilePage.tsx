@@ -239,7 +239,7 @@ const ProfilePage = () => {
   const initial = displayName?.charAt(0).toUpperCase() || "U";
 
   return (
-    <div className="min-h-screen pb-16 md:pb-4">
+    <div className="min-h-screen md:pt-14 pb-16 md:pb-4">
       <div className="max-w-2xl mx-auto px-4 md:px-6 md:py-8 py-4">
         {/* Header */}
         <div className="flex items-start gap-5 mb-8">
@@ -260,17 +260,6 @@ const ProfilePage = () => {
               <h1 className="text-xl font-display font-bold text-foreground">{displayName}</h1>
               {displayProfile?.username && (
                 <span className="text-sm text-muted-foreground">@{displayProfile.username}</span>
-              )}
-              {isOwnProfile && (
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={signOut}
-                    title="Sign out"
-                    className="w-8 h-8 rounded-full bg-secondary md:hidden flex items-center justify-center hover:bg-secondary/80 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4 text-foreground" />
-                  </button>
-                </div>
               )}
             </div>
             {displayProfile?.bio && (
@@ -420,6 +409,16 @@ const ProfilePage = () => {
           >
             Share Profile
           </button>
+          
+          {isOwnProfile && (
+            <button
+              onClick={signOut}
+              className="flex-1 h-10 rounded-xl bg-secondary text-secondary-foreground text-sm font-semibold hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Log Out
+            </button>
+          )}
         </div>
 
         {/* Tabs */}

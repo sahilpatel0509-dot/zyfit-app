@@ -23,7 +23,7 @@ const TopNavbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 glass border-b border-border/50 flex items-center justify-between px-4 md:px-6 z-50">
+    <header className="fixed top-0 left-0 right-0 h-16 glass border-b border-border/50 hidden md:flex items-center justify-between px-4 md:px-6 z-50">
       <Link to="/" className="text-2xl font-bold font-display text-gradient shrink-0">
         Zyfit
       </Link>
