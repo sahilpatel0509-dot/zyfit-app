@@ -207,7 +207,7 @@ const ProfilePage = () => {
   /* ── Not logged in ─────────────────────────────────────────────────────── */
   if (!loading && !user && !publicProfileId) {
     return (
-      <div className="min-h-screen md:pt-14 pb-16 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
+      <div className="min-h-screen pb-16 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
         <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-2">
           <LogIn className="w-8 h-8 text-muted-foreground" />
         </div>
@@ -239,7 +239,7 @@ const ProfilePage = () => {
   const initial = displayName?.charAt(0).toUpperCase() || "U";
 
   return (
-    <div className="min-h-screen md:pt-14 pb-16 md:pb-4">
+    <div className="min-h-screen pb-16 md:pb-4">
       <div className="max-w-2xl mx-auto px-4 md:px-6 md:py-8 py-4">
         {/* Header */}
         <div className="flex items-start gap-5 mb-8">

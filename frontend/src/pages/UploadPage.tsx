@@ -147,7 +147,7 @@ const UploadPage = () => {
   // Not logged in
   if (!user) {
     return (
-      <div className="min-h-screen pt-14 pb-20 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
+      <div className="min-h-screen pb-20 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
         <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-2">
           <LogIn className="w-8 h-8 text-muted-foreground" />
         </div>
@@ -172,7 +172,7 @@ const UploadPage = () => {
 
   if (!hasLinkedYouTube || subscriberCount < 0 || videoCount < 0) {
     return (
-      <div className="min-h-screen pt-14 pb-20 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
+      <div className="min-h-screen pb-20 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
         <div className="w-20 h-20 rounded-full bg-red-900/20 flex items-center justify-center mb-2">
           <Upload className="w-8 h-8 text-red-500" />
         </div>
@@ -193,7 +193,7 @@ const UploadPage = () => {
   }
 
   return (
-    <div className="min-h-screen md:pt-14 pb-16 md:pb-4">
+    <div className="min-h-screen pb-16 md:pb-4">
       <div className="max-w-2xl mx-auto px-4 md:px-6 md:py-8 py-4">
         <h1 className="text-2xl font-display font-bold text-foreground mb-1">Upload Reel</h1>
         <p className="text-sm text-muted-foreground mb-8">Share your fashion moment with the world</p>
