@@ -340,7 +340,7 @@ const ProfilePage = () => {
                 )}
                 <div>
                   <p className="font-semibold">
-                    {((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10)
+                    {((displayProfile.youtube_subscriber_count ?? 0) >= 0 && liveStats.posts >= 0)
                       ? "Uploads Unlocked"
                       : "Uploads Locked"}
                   </p>
