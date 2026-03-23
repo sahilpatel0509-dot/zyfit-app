@@ -328,7 +328,7 @@ const ProfilePage = () => {
                 transition={{ delay: 0.1 }}
                 className={cn(
                   "mt-3 flex items-start gap-3 p-3 rounded-xl border text-sm",
-                  ((displayProfile.youtube_subscriber_count ?? 0) >= 0 && liveStats.posts >= 0)
+                  ((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10)
                     ? "bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400"
                     : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
                 )}
