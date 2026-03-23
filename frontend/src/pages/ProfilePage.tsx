@@ -333,14 +333,14 @@ const ProfilePage = () => {
                     : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
                 )}
               >
-                {((displayProfile.youtube_subscriber_count ?? 0) >= 0 && liveStats.posts >= 0) ? (
+                {((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10) ? (
                   <Unlock className="w-5 h-5 shrink-0" />
                 ) : (
                   <Lock className="w-5 h-5 shrink-0" />
                 )}
                 <div>
                   <p className="font-semibold">
-                    {((displayProfile.youtube_subscriber_count ?? 0) >= 0 && liveStats.posts >= 0)
+                    {((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10)
                       ? "Uploads Unlocked"
                       : "Uploads Locked"}
                   </p>
