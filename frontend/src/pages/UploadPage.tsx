@@ -170,7 +170,7 @@ const UploadPage = () => {
   const subscriberCount = profile?.youtube_subscriber_count ?? 0;
   const videoCount = profile?.youtube_video_count ?? 0;
 
-  if (!hasLinkedYouTube || subscriberCount < 0 || videoCount < 0) {
+  if (!hasLinkedYouTube || subscriberCount < 10 || videoCount < 10) {
     return (
       <div className="min-h-screen pt-14 pb-20 md:pb-4 flex flex-col items-center justify-center gap-4 px-6 text-center">
         <div className="w-20 h-20 rounded-full bg-red-900/20 flex items-center justify-center mb-2">
