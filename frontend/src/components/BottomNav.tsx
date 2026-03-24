@@ -1,17 +1,23 @@
-import { Home, Compass, Plus, Bookmark, User } from "lucide-react";
+import { Home, Compass, Plus, Bookmark, User, ShieldAlert } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Compass, label: "Explore", path: "/explore" },
-  { icon: Plus, label: "Upload", path: "/upload", isCenter: true },
-  { icon: Bookmark, label: "Saved", path: "/saved" },
-  { icon: User, label: "Profile", path: "/profile" },
-];
+import { useAuth } from "@/contexts/useAuth";
 
 const BottomNav = () => {
   const location = useLocation();
+  const { profile } = useAuth();
+
+  const navItems = [
+    { icon: Home, label: "Home", path: "/" },
+    { icon: Compass, label: "Explore", path: "/explore" },
+    { icon: Plus, label: "Upload", path: "/upload", isCenter: true },
+    { icon: Bookmark, label: "Saved", path: "/saved" },
+    { icon: User, label: "Profile", path: "/profile" },
+  ];
+
+  if (profile?.role === "admin") {
+    navItems.push({ icon: ShieldAlert, label: "Admin", path: "/admin", isCenter: false });
+  }
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-16 glass border-t border-border/50 flex items-center justify-around px-2 z-50 md:hidden">
@@ -26,8 +32,8 @@ const BottomNav = () => {
               isCenter
                 ? "relative -mt-5"
                 : active
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
             )}
           >
             {isCenter ? (

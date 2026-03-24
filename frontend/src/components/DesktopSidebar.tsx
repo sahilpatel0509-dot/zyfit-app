@@ -1,16 +1,22 @@
-import { Home, Compass, Bookmark, User } from "lucide-react";
+import { Home, Compass, Bookmark, User, ShieldAlert } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-
-const sideItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Compass, label: "Explore", path: "/explore" },
-  { icon: Bookmark, label: "Saved", path: "/saved" },
-  { icon: User, label: "Profile", path: "/profile" },
-];
+import { useAuth } from "@/contexts/useAuth";
 
 const DesktopSidebar = () => {
   const location = useLocation();
+  const { profile } = useAuth();
+
+  const sideItems = [
+    { icon: Home, label: "Home", path: "/" },
+    { icon: Compass, label: "Explore", path: "/explore" },
+    { icon: Bookmark, label: "Saved", path: "/saved" },
+    { icon: User, label: "Profile", path: "/profile" },
+  ];
+
+  if (profile?.role === "admin") {
+    sideItems.push({ icon: ShieldAlert, label: "Admin", path: "/admin" });
+  }
 
   return (
     <aside className="hidden md:flex fixed left-0 top-14 bottom-0 w-16 lg:w-52 flex-col items-center lg:items-stretch py-6 px-2 lg:px-3 border-r border-border/50 bg-background/50 z-30 gap-1">

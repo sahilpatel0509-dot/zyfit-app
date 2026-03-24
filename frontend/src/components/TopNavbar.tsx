@@ -1,4 +1,4 @@
-import { Search, Upload, User, LogIn, LogOut } from "lucide-react";
+import { Search, Upload, User, LogIn, LogOut, ShieldAlert } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/useAuth";
 import { useState, useEffect } from "react";
@@ -62,6 +62,15 @@ const TopNavbar = () => {
           <div className="w-10 h-10 rounded-full bg-secondary animate-pulse" />
         ) : user ? (
           <div className="flex items-center gap-2">
+            {profile?.role === "admin" && (
+              <Link
+                to="/admin"
+                className="w-10 h-10 rounded-full bg-destructive flex items-center justify-center hover:opacity-90 transition-opacity"
+                title="Admin Portal"
+              >
+                <ShieldAlert className="w-5 h-5 text-destructive-foreground" />
+              </Link>
+            )}
             <Link
               to="/profile"
               className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center hover:opacity-90 transition-opacity overflow-hidden ring-2 ring-primary/20"
