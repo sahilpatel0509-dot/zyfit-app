@@ -76,6 +76,10 @@ const UploadPage = () => {
 
   const handleSubmit = async () => {
     if (!file || !user) return;
+    if (!caption.trim()) {
+      toast({ title: "Caption required", description: "Please enter a caption for your reel.", variant: "destructive" });
+      return;
+    }
     setStatus("uploading");
     setProgress(10);
 
@@ -262,7 +266,7 @@ const UploadPage = () => {
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               <Type className="w-4 h-4 text-muted-foreground" />
-              Caption
+              Caption <span className="text-destructive">*</span>
             </label>
             <textarea
               value={caption}
@@ -396,7 +400,7 @@ const UploadPage = () => {
           {/* Submit */}
           <button
             onClick={handleSubmit}
-            disabled={!file || status === "uploading" || status === "done"}
+            disabled={!file || !caption.trim() || status === "uploading" || status === "done"}
             className="w-full h-12 rounded-xl bg-gradient-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity shadow-glow disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {status === "uploading" ? (

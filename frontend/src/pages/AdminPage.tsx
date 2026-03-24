@@ -61,17 +61,48 @@ export default function AdminPage() {
 
     const fetchReels = async () => {
         setLoadingReels(true);
-        const { data, error } = await supabase.from("reels").select(`
+        try {
+            const { data, error } = await supabase.from("reels").select(`
       *,
       profiles:user_id ( id, username, full_name, avatar_url )
     `).order("created_at", { ascending: false });
 
-        if (error) {
-            toast.error("Failed to load reels");
-        } else {
-            setReels(data || []);
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                const ids = data.map((r: any) => r.id);
+                
+                const [likesRes, commentsRes] = await Promise.all([
+                    supabase.from("likes").select("reel_id").in("reel_id", ids),
+                    supabase.from("comments").select("reel_id").in("reel_id", ids)
+                ]);
+
+                const likeCountMap: Record<string, number> = {};
+                const commentCountMap: Record<string, number> = {};
+
+                for (const like of (likesRes.data || [])) {
+                    likeCountMap[like.reel_id] = (likeCountMap[like.reel_id] || 0) + 1;
+                }
+
+                for (const comment of (commentsRes.data || [])) {
+                    commentCountMap[comment.reel_id] = (commentCountMap[comment.reel_id] || 0) + 1;
+                }
+
+                const enrichedReels = data.map((r: any) => ({
+                    ...r,
+                    likes_count: likeCountMap[r.id] || 0,
+                    comments_count: commentCountMap[r.id] || 0
+                }));
+
+                setReels(enrichedReels);
+            } else {
+                setReels([]);
+            }
+        } catch (error: any) {
+            toast.error("Failed to load reels: " + error.message);
+        } finally {
+            setLoadingReels(false);
         }
-        setLoadingReels(false);
     };
 
     const handleDeleteProfile = async (userId: string) => {
