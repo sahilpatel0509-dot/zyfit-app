@@ -18,6 +18,7 @@ export interface Profile {
   follower_count: number;
   following_count: number;
   post_count: number;
+  role?: string;
   youtube_channel_id: string | null;
   youtube_channel_name: string | null;
   youtube_channel_thumbnail: string | null;
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .from("profiles")
       .select(
         `id, username, full_name, avatar_url, bio,
-         follower_count, following_count, post_count,
+         follower_count, following_count, post_count, role,
          youtube_channel_id, youtube_channel_name,
          youtube_channel_thumbnail, youtube_subscriber_count,
          youtube_video_count, youtube_last_checked`

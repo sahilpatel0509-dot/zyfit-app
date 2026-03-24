@@ -77,7 +77,7 @@ export function EditProfileDialog({ open, onOpenChange }: EditProfileDialogProps
         const { data: { publicUrl } } = supabase.storage
           .from("reels")
           .getPublicUrl(storagePath);
-          
+
         newAvatarUrl = publicUrl;
       }
 
