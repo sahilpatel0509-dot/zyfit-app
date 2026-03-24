@@ -80,7 +80,7 @@ const ProfilePage = () => {
       supabase.from("follows").select("id", { count: "exact", head: true }).eq("following_id", userId),
       supabase.from("follows").select("id", { count: "exact", head: true }).eq("follower_id", userId),
     ]);
-    
+
     let followingStatus = false;
     if (user && userId !== user.id) {
       const { data } = await supabase.from("follows").select("id").eq("follower_id", user.id).eq("following_id", userId).single();
@@ -189,7 +189,7 @@ const ProfilePage = () => {
 
   const handleFollowToggle = async () => {
     if (!user || !profileIdToFetch || isOwnProfile) return;
-    
+
     const wasFollowing = isFollowing;
     setIsFollowing(!wasFollowing);
     setLiveStats(s => ({
@@ -319,16 +319,16 @@ const ProfilePage = () => {
                 </button>
               )}
             </motion.div>
-            
+
             {/* Upload Lock/Unlock Status */}
             {isOwnProfile && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
                 className={cn(
                   "mt-3 flex items-start gap-3 p-3 rounded-xl border text-sm",
-                  ((displayProfile.youtube_subscriber_count ?? 0) >= 10 && liveStats.posts >= 10)
+                  ((displayProfile.youtube_subscriber_count ?? 0) >= 0 && liveStats.posts >= 0)
                     ? "bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400"
                     : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
                 )}
@@ -411,7 +411,7 @@ const ProfilePage = () => {
               Share Profile
             </button>
           </div>
-          
+
           {isOwnProfile && (
             <button
               onClick={signOut}
