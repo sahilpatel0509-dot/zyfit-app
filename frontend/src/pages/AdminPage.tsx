@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase";
 import { Profile } from "@/contexts/AuthContext";
 import { DbReel } from "@/hooks/use-reels";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -23,6 +25,21 @@ export default function AdminPage() {
     const [reels, setReels] = useState<DbReel[]>([]);
     const [loadingProfiles, setLoadingProfiles] = useState(false);
     const [loadingReels, setLoadingReels] = useState(false);
+
+    const [searchQueryProfiles, setSearchQueryProfiles] = useState("");
+    const [searchQueryReels, setSearchQueryReels] = useState("");
+
+    const filteredProfiles = profiles.filter((p) =>
+        (p.username?.toLowerCase() || "").includes(searchQueryProfiles.toLowerCase()) ||
+        (p.full_name?.toLowerCase() || "").includes(searchQueryProfiles.toLowerCase())
+    );
+
+    const filteredReels = reels.filter((r: any) => {
+        const creator = r.profiles ? (Array.isArray(r.profiles) ? r.profiles[0]?.username : r.profiles?.username) : "";
+        const caption = r.caption || "";
+        const q = searchQueryReels.toLowerCase();
+        return (creator?.toLowerCase() || "").includes(q) || (caption?.toLowerCase() || "").includes(q);
+    });
 
     useEffect(() => {
         if (profile?.role === "admin") {
@@ -143,6 +160,18 @@ export default function AdminPage() {
                             <CardTitle>Profiles ({profiles.length})</CardTitle>
                         </CardHeader>
                         <CardContent>
+                            <div className="flex items-center space-x-2 mb-4">
+                                <div className="relative flex-1 max-w-sm">
+                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        type="text"
+                                        placeholder="Search profiles..."
+                                        className="pl-8"
+                                        value={searchQueryProfiles}
+                                        onChange={(e) => setSearchQueryProfiles(e.target.value)}
+                                    />
+                                </div>
+                            </div>
                             {loadingProfiles ? (
                                 <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
                             ) : (
@@ -158,7 +187,7 @@ export default function AdminPage() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {profiles.map((p) => (
+                                            {filteredProfiles.map((p) => (
                                                 <TableRow key={p.id}>
                                                     <TableCell>
                                                         {p.avatar_url ? (
@@ -186,7 +215,7 @@ export default function AdminPage() {
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
-                                            {profiles.length === 0 && (
+                                            {filteredProfiles.length === 0 && (
                                                 <TableRow>
                                                     <TableCell colSpan={5} className="text-center py-4 text-muted-foreground">
                                                         No profiles found.
@@ -207,6 +236,18 @@ export default function AdminPage() {
                             <CardTitle>Reels ({reels.length})</CardTitle>
                         </CardHeader>
                         <CardContent>
+                            <div className="flex items-center space-x-2 mb-4">
+                                <div className="relative flex-1 max-w-sm">
+                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        type="text"
+                                        placeholder="Search reels by creator or caption..."
+                                        className="pl-8"
+                                        value={searchQueryReels}
+                                        onChange={(e) => setSearchQueryReels(e.target.value)}
+                                    />
+                                </div>
+                            </div>
                             {loadingReels ? (
                                 <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
                             ) : (
@@ -222,7 +263,7 @@ export default function AdminPage() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {reels.map((r: any) => (
+                                            {filteredReels.map((r: any) => (
                                                 <TableRow key={r.id}>
                                                     <TableCell>
                                                         <video
@@ -255,7 +296,7 @@ export default function AdminPage() {
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
-                                            {reels.length === 0 && (
+                                            {filteredReels.length === 0 && (
                                                 <TableRow>
                                                     <TableCell colSpan={5} className="text-center py-4 text-muted-foreground">
                                                         No reels found.
