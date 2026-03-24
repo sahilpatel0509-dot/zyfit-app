@@ -27,8 +27,12 @@ const ProductsSlideUp = ({ isOpen, onClose, reelId }: ProductsSlideUpProps) => {
       .from("reel_products")
       .select("id, reel_id, product_name, affiliate_link")
       .eq("reel_id", reelId);
-      
-    if (error || !rows || rows.length === 0) {
+
+    if (error) {
+      console.error("Error fetching products:", error);
+      import("sonner").then((mod) => mod.toast.error("Failed to load products: " + error.message));
+      setProducts([]);
+    } else if (!rows || rows.length === 0) {
       setProducts([]);
     } else {
       setProducts(rows as DbProduct[]);
