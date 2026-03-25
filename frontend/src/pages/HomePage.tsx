@@ -3,19 +3,31 @@ import { Loader2 } from "lucide-react";
 import { useReels } from "@/hooks/use-reels";
 import FeedReelCard from "@/components/FeedReelCard";
 
+let cachedShuffledIds: string[] = [];
+
 const HomePage = () => {
   const { reels, loading, error, toggleLike, toggleSave, toggleFollow } = useReels();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [shuffledIds, setShuffledIds] = useState<string[]>([]);
+  const [shuffledIds, setShuffledIds] = useState<string[]>(cachedShuffledIds);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (reels.length > 0 && shuffledIds.length === 0) {
+    if (reels.length > 0 && cachedShuffledIds.length === 0) {
+      // First time loading reels in this browser session
       const ids = reels.map(r => r.id);
       ids.sort(() => Math.random() - 0.5);
+      cachedShuffledIds = ids;
       setShuffledIds(ids);
+    } else if (reels.length > 0) {
+      // Keep existing randomized order but add new reels to the end / remove deleted ones
+      const existingValidIds = cachedShuffledIds.filter(id => reels.some(r => r.id === id));
+      const newReelIds = reels.map(r => r.id).filter(id => !cachedShuffledIds.includes(id));
+      
+      const newOrder = [...existingValidIds, ...newReelIds];
+      cachedShuffledIds = newOrder;
+      setShuffledIds(newOrder);
     }
-  }, [reels.length, shuffledIds.length]);
+  }, [reels.length]);
 
   const displayReels = useMemo(() => {
     if (shuffledIds.length === 0) return reels;
