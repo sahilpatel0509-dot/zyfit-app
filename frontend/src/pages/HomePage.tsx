@@ -15,9 +15,14 @@ const HomePage = () => {
     if (reels.length > 0 && cachedShuffledIds.length === 0) {
       // First time loading reels in this browser session
       const ids = reels.map(r => r.id);
-      ids.sort(() => Math.random() - 0.5);
-      cachedShuffledIds = ids;
-      setShuffledIds(ids);
+      
+      // Pick one random reel to be first
+      const randomIdx = Math.floor(Math.random() * ids.length);
+      const firstId = ids.splice(randomIdx, 1)[0];
+      const newOrder = [firstId, ...ids];
+      
+      cachedShuffledIds = newOrder;
+      setShuffledIds(newOrder);
     } else if (reels.length > 0) {
       // Keep existing randomized order but add new reels to the end / remove deleted ones
       const existingValidIds = cachedShuffledIds.filter(id => reels.some(r => r.id === id));
