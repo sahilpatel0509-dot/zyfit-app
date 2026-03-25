@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { useReels } from "@/hooks/use-reels";
 import FeedReelCard from "@/components/FeedReelCard";
@@ -6,7 +6,23 @@ import FeedReelCard from "@/components/FeedReelCard";
 const HomePage = () => {
   const { reels, loading, error, toggleLike, toggleSave, toggleFollow } = useReels();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [shuffledIds, setShuffledIds] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (reels.length > 0 && shuffledIds.length === 0) {
+      const ids = reels.map(r => r.id);
+      ids.sort(() => Math.random() - 0.5);
+      setShuffledIds(ids);
+    }
+  }, [reels.length, shuffledIds.length]);
+
+  const displayReels = useMemo(() => {
+    if (shuffledIds.length === 0) return reels;
+    return shuffledIds
+      .map(id => reels.find(r => r.id === id))
+      .filter((r): r is NonNullable<typeof r> => r !== undefined);
+  }, [shuffledIds, reels]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -28,7 +44,7 @@ const HomePage = () => {
     items.forEach((item) => observer.observe(item));
 
     return () => observer.disconnect();
-  }, [reels]);
+  }, [displayReels]);
 
   // 🔄 Loading state
   if (loading) {
@@ -49,7 +65,7 @@ const HomePage = () => {
   }
 
   // 📭 Empty state
-  if (reels.length === 0) {
+  if (displayReels.length === 0) {
     return (
       <div className="h-screen flex flex-col items-center justify-center text-center px-6 gap-3">
         <p className="text-foreground font-semibold">No reels yet</p>
@@ -78,7 +94,7 @@ const HomePage = () => {
         ref={containerRef}
         className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-4rem)] overflow-y-scroll snap-y snap-mandatory no-scrollbar"
       >
-        {reels.map((reel, index) => (
+        {displayReels.map((reel, index) => (
           <div
             key={reel.id}
             data-index={index}
