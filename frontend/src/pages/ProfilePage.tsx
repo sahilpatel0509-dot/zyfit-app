@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { ReelModal } from "@/components/ReelModal";
+import { FollowListDialog } from "@/components/FollowListDialog";
 
 const tabs = [
   { icon: Grid3X3, label: "Posts" },
@@ -52,6 +53,7 @@ const ProfilePage = () => {
   const [isFetchingProfile, setIsFetchingProfile] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [selectedReelId, setSelectedReelId] = useState<string | null>(null);
+  const [followDialog, setFollowDialog] = useState<{ open: boolean; type: "followers" | "following" | null }>({ open: false, type: null });
 
   useEffect(() => {
     if (!isOwnProfile && publicProfileId) {
@@ -270,11 +272,17 @@ const ProfilePage = () => {
                 <p className="text-lg font-bold text-foreground">{liveStats.posts}</p>
                 <p className="text-xs text-muted-foreground">Posts</p>
               </div>
-              <div className="text-center">
+              <div 
+                className="text-center cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => setFollowDialog({ open: true, type: "followers" })}
+              >
                 <p className="text-lg font-bold text-foreground">{liveStats.followers}</p>
                 <p className="text-xs text-muted-foreground">Followers</p>
               </div>
-              <div className="text-center">
+              <div 
+                className="text-center cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => setFollowDialog({ open: true, type: "following" })}
+              >
                 <p className="text-lg font-bold text-foreground">{liveStats.following}</p>
                 <p className="text-xs text-muted-foreground">Following</p>
               </div>
@@ -514,6 +522,12 @@ const ProfilePage = () => {
       </div>
       <EditProfileDialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen} />
       <ReelModal reelId={selectedReelId} isOpen={!!selectedReelId} onClose={() => setSelectedReelId(null)} />
+      <FollowListDialog 
+        open={followDialog.open} 
+        onOpenChange={(open) => setFollowDialog(prev => ({ ...prev, open }))} 
+        type={followDialog.type} 
+        userId={profileIdToFetch ?? null} 
+      />
     </div>
   );
 };
