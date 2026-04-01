@@ -3,53 +3,42 @@ import { Loader2 } from "lucide-react";
 import { useReels } from "@/hooks/use-reels";
 import FeedReelCard from "@/components/FeedReelCard";
 
-let cachedShuffledIds: string[] = [];
-
 const HomePage = () => {
   const { reels, loading, error, toggleLike, toggleSave, toggleFollow } = useReels();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [shuffledIds, setShuffledIds] = useState<string[]>(cachedShuffledIds);
+  const [shuffledIds, setShuffledIds] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (reels.length === 0) return;
 
-    if (cachedShuffledIds.length === 0) {
-      // First time loading reels in this browser session
-      const ids = reels.map(r => r.id);
-      
-      // Full array Fisher-Yates shuffle
-      for (let i = ids.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [ids[i], ids[j]] = [ids[j], ids[i]];
-      }
-      
-      cachedShuffledIds = ids;
-      setShuffledIds(ids);
-    } else {
-      // Keep existing randomized order but add new reels to the end / remove deleted ones
-      const existingValidIds = cachedShuffledIds.filter(id => reels.some(r => r.id === id));
-      const newIds = reels.map(r => r.id).filter(id => !cachedShuffledIds.includes(id));
-      
-      if (newIds.length > 0) {
-        // Shuffle the newly appended reels
-        for (let i = newIds.length - 1; i > 0; i--) {
+    setShuffledIds(prevIds => {
+      if (prevIds.length === 0) {
+        // Initial shuffle
+        const ids = reels.map(r => r.id);
+        for (let i = ids.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [newIds[i], newIds[j]] = [newIds[j], newIds[i]];
+          [ids[i], ids[j]] = [ids[j], ids[i]];
         }
+        return ids;
       }
-      
-      const newOrder = [...existingValidIds, ...newIds];
-      
-      // Only trigger rerender if there is an actual change
-      if (
-        newOrder.length !== cachedShuffledIds.length ||
-        !newOrder.every((id, idx) => id === cachedShuffledIds[idx])
-      ) {
-        cachedShuffledIds = newOrder;
-        setShuffledIds(newOrder);
+
+      // Infinite scroll: Keep existing order and append newly shuffled reels
+      const existingValidIds = prevIds.filter(id => reels.some(r => r.id === id));
+      const newIds = reels.map(r => r.id).filter(id => !prevIds.includes(id));
+
+      if (newIds.length === 0) {
+        // Only return a new array if we actually purged invalid/deleted IDs
+        return existingValidIds.length === prevIds.length ? prevIds : existingValidIds;
       }
-    }
+
+      for (let i = newIds.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newIds[i], newIds[j]] = [newIds[j], newIds[i]];
+      }
+
+      return [...existingValidIds, ...newIds];
+    });
   }, [reels]);
 
   const displayReels = useMemo(() => {
