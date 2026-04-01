@@ -8,6 +8,7 @@ const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [shuffledIds, setShuffledIds] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasResetScroll = useRef(false);
 
   useEffect(() => {
     if (reels.length === 0) return;
@@ -52,6 +53,13 @@ const HomePage = () => {
     const container = containerRef.current;
     if (!container) return;
 
+    if (shuffledIds.length > 0 && !hasResetScroll.current) {
+      // Reset scroll explicitly after first shuffle
+      container.scrollTop = 0;
+      setActiveIndex(0);
+      hasResetScroll.current = true;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -68,7 +76,7 @@ const HomePage = () => {
     items.forEach((item) => observer.observe(item));
 
     return () => observer.disconnect();
-  }, [displayReels]);
+  }, [displayReels, shuffledIds.length]);
 
   // 🔄 Loading state
   if (loading) {
