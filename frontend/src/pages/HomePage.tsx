@@ -12,27 +12,45 @@ const HomePage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (reels.length > 0 && cachedShuffledIds.length === 0) {
+    if (reels.length === 0) return;
+
+    if (cachedShuffledIds.length === 0) {
       // First time loading reels in this browser session
       const ids = reels.map(r => r.id);
       
-      // Pick one random reel to be first
-      const randomIdx = Math.floor(Math.random() * ids.length);
-      const firstId = ids.splice(randomIdx, 1)[0];
-      const newOrder = [firstId, ...ids];
+      // Full array Fisher-Yates shuffle
+      for (let i = ids.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+      }
       
-      cachedShuffledIds = newOrder;
-      setShuffledIds(newOrder);
-    } else if (reels.length > 0) {
+      cachedShuffledIds = ids;
+      setShuffledIds(ids);
+    } else {
       // Keep existing randomized order but add new reels to the end / remove deleted ones
       const existingValidIds = cachedShuffledIds.filter(id => reels.some(r => r.id === id));
-      const newReelIds = reels.map(r => r.id).filter(id => !cachedShuffledIds.includes(id));
+      const newIds = reels.map(r => r.id).filter(id => !cachedShuffledIds.includes(id));
       
-      const newOrder = [...existingValidIds, ...newReelIds];
-      cachedShuffledIds = newOrder;
-      setShuffledIds(newOrder);
+      if (newIds.length > 0) {
+        // Shuffle the newly appended reels
+        for (let i = newIds.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [newIds[i], newIds[j]] = [newIds[j], newIds[i]];
+        }
+      }
+      
+      const newOrder = [...existingValidIds, ...newIds];
+      
+      // Only trigger rerender if there is an actual change
+      if (
+        newOrder.length !== cachedShuffledIds.length ||
+        !newOrder.every((id, idx) => id === cachedShuffledIds[idx])
+      ) {
+        cachedShuffledIds = newOrder;
+        setShuffledIds(newOrder);
+      }
     }
-  }, [reels.length]);
+  }, [reels]);
 
   const displayReels = useMemo(() => {
     if (shuffledIds.length === 0) return reels;
